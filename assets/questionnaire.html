@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>志愿规划测评 · 答题卡</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600;700;900&family=Ma+Shan+Zheng&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#f4eeddff;
+  --paper-2:#efe7d0;
+  --paper-deep:#e6dabb;
+  --ink:#2b2218;
+  --ink-soft:#6a5e48;
+  --ink-faint:#9a8c6f;
+  --red:#9e2b25;
+  --red-deep:#741d18;
+  --red-bright:#b8342c;
+  --gold:#b08433;
+  --gold-light:#cda558;
+  --jade:#3f6b54;
+  --card:#fbf7ea;
+  --line:#cdbd97;
+  --line-soft:#ddd0ad;
+}
+*{box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  margin:0; padding:0;
+  background:
+    radial-gradient(1200px 600px at 50% -10%, #f9f3e3 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 100%, #efe3c6 0%, transparent 55%),
+    var(--paper);
+  font-family:"Noto Serif SC",serif;
+  color:var(--ink);
+  min-height:100vh;
+  position:relative;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* ink-wash atmosphere */
+body::before{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:0;
+  opacity:.5; mix-blend-mode:multiply;
+  background-image:
+    radial-gradient(circle at 12% 18%, rgba(110,29,24,.05) 0, transparent 30%),
+    radial-gradient(circle at 88% 12%, rgba(63,107,84,.05) 0, transparent 28%),
+    radial-gradient(circle at 78% 82%, rgba(176,132,51,.06) 0, transparent 34%);
+}
+/* grain */
+body::after{
+  content:"";
+  position:fixed; inset:0;
+  pointer-events:none; z-index:0; opacity:.05;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.wrap{
+  position:relative; z-index:1;
+  max-width:720px;
+  margin:0 auto;
+  padding:48px 26px 110px;
+}
+
+/* ============ HEADER ============ */
+.sheet-head{
+  position:relative;
+  background:
+    linear-gradient(180deg, var(--card), #f7f1e1);
+  border:1.5px solid var(--ink);
+  padding:30px 32px 26px;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.6) inset,
+    8px 9px 0 rgba(43,34,24,.07),
+    0 18px 40px -22px rgba(43,34,24,.5);
+}
+.sheet-head::before{
+  content:""; position:absolute; inset:7px;
+  border:1px solid var(--line); pointer-events:none;
+}
+/* corner ticks */
+.sheet-head .corner{position:absolute; width:14px; height:14px; border:2px solid var(--red); z-index:2;}
+.corner.tl{top:-2px;left:-2px;border-right:none;border-bottom:none;}
+.corner.tr{top:-2px;right:-2px;border-left:none;border-bottom:none;}
+.corner.bl{bottom:-2px;left:-2px;border-right:none;border-top:none;}
+.corner.br{bottom:-2px;right:-2px;border-left:none;border-top:none;}
+
+.kicker{
+  font-family:"JetBrains Mono",monospace;
+  font-size:10.5px; letter-spacing:.28em;
+  color:var(--red); text-transform:uppercase;
+  display:flex; justify-content:space-between; align-items:center;
+}
+.kicker .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--gold);margin-right:8px;vertical-align:middle;box-shadow:0 0 0 3px rgba(176,132,51,.15);}
+h1.title{
+  margin:14px 0 8px;
+  font-size:38px; font-weight:900;
+  letter-spacing:.04em; line-height:1.2;
+  background:linear-gradient(180deg, var(--ink), #4a3c28);
+  -webkit-background-clip:text; background-clip:text; color:transparent;
+}
+.subtitle{
+  font-size:14px; color:var(--ink-soft);
+  letter-spacing:.03em; line-height:1.7; max-width:88%;
+}
+.subtitle .hl{color:var(--red); font-weight:600;}
+
+.seal{
+  position:absolute; top:24px; right:26px;
+  width:80px; height:80px;
+  border:2.5px solid var(--red);
+  border-radius:8px;
+  color:var(--red);
+  display:flex; align-items:center; justify-content:center;
+  font-family:"Ma Shan Zheng",cursive;
+  font-size:21px; letter-spacing:.12em; line-height:1.35;
+  text-align:center;
+  transform:rotate(-9deg);
+  opacity:.88; mix-blend-mode:multiply;
+  writing-mode:vertical-rl; padding:8px 4px;
+  box-shadow:inset 0 0 0 4px rgba(158,43,37,.08);
+}
+.seal::after{content:"";position:absolute;inset:4px;border:1px solid var(--red);border-radius:4px;opacity:.5;}
+
+/* ============ PROGRESS ============ */
+.progress-strip{
+  display:flex; align-items:center; gap:14px;
+  margin:26px 2px 34px;
+  font-family:"JetBrains Mono",monospace;
+}
+.progress-strip .count{
+  font-size:11px; color:var(--ink-soft);
+  letter-spacing:.12em; white-space:nowrap;
+}
+.progress-strip .count b{color:var(--red);}
+.progress-track{
+  flex:1; height:6px;
+  background:var(--paper-deep);
+  border-radius:6px;
+  position:relative; overflow:hidden;
+  box-shadow:inset 0 1px 2px rgba(43,34,24,.18);
+}
+.progress-fill{
+  position:absolute; left:0; top:0; bottom:0; width:0%;
+  background:linear-gradient(90deg, var(--gold), var(--red));
+  border-radius:6px;
+  transition:width .55s cubic-bezier(.65,0,.35,1);
+  box-shadow:0 0 10px rgba(158,43,37,.4);
+}
+.progress-fill::after{
+  content:""; position:absolute; right:0; top:50%;
+  width:9px; height:9px; transform:translate(50%,-50%);
+  background:var(--red); border-radius:50%;
+  box-shadow:0 0 0 3px var(--paper), 0 0 8px rgba(158,43,37,.6);
+}
+
+/* ============ STEP CARD ============ */
+.step{display:none;}
+.step.active{display:block; animation:rise .55s cubic-bezier(.2,.8,.2,1) both;}
+@keyframes rise{from{opacity:0; transform:translateY(18px);} to{opacity:1; transform:translateY(0);}}
+
+.dim-label{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:"JetBrains Mono",monospace;
+  font-size:10.5px; letter-spacing:.22em;
+  color:var(--red); text-transform:uppercase; margin-bottom:8px;
+}
+.dim-label::before{content:""; width:22px; height:2px; background:linear-gradient(90deg,var(--red),transparent);}
+.step h2{
+  font-size:25px; margin:0 0 4px; font-weight:700; letter-spacing:.02em;
+}
+.step h2 .num{
+  font-family:"Ma Shan Zheng",cursive; color:var(--gold);
+  font-size:30px; margin-right:10px;
+}
+.step-deco{
+  height:2px; margin:14px 0 26px;
+  background:
+    linear-gradient(90deg, var(--ink) 0 40px, transparent 40px),
+    repeating-linear-gradient(90deg, var(--line) 0 6px, transparent 6px 12px);
+  background-size:100% 2px;
+}
+
+/* ---- fields ---- */
+.field{margin-bottom:24px;}
+.field > label{
+  display:block; font-size:13.5px; color:var(--ink-soft);
+  margin-bottom:9px; letter-spacing:.02em; font-weight:500;
+}
+.field > label b{color:var(--red); margin-right:3px;}
+.field .hint{color:var(--ink-faint); font-size:12px; font-weight:400;}
+select,input[type=text],input[type=number]{
+  width:100%; font-family:"Noto Serif SC",serif;
+  font-size:16px; padding:14px 16px;
+  background:var(--card);
+  border:1.5px solid var(--line);
+  color:var(--ink); outline:none; border-radius:3px;
+  transition:border-color .2s, box-shadow .2s, background .2s;
+  box-shadow:inset 0 1px 2px rgba(43,34,24,.05);
+}
+select{appearance:none; cursor:pointer;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239e2b25' stroke-width='1.6' fill='none'/%3E%3C/svg%3E");
+  background-repeat:no-repeat; background-position:right 16px center;
+}
+select:focus,input:focus{
+  border-color:var(--red); background:#fffdf6;
+  box-shadow:0 0 0 3px rgba(158,43,37,.12);
+}
+.chip-row{display:flex; flex-wrap:wrap; gap:10px;}
+.chip{
+  border:1.5px solid var(--line);
+  background:var(--card); padding:10px 18px;
+  font-size:14px; cursor:pointer; user-select:none;
+  border-radius:30px; transition:all .18s ease;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.5);
+}
+.chip:hover{border-color:var(--gold); transform:translateY(-1px);}
+.chip.sel{
+  background:linear-gradient(180deg,var(--red-bright),var(--red));
+  color:#fff5e6; border-color:var(--red-deep);
+  box-shadow:0 4px 10px -3px rgba(158,43,37,.5);
+}
+
+/* ---- questions ---- */
+.q{margin-bottom:30px;}
+.q + .q{padding-top:26px; border-top:1px dashed var(--line);}
+.q-no{
+  display:inline-block;
+  font-family:"JetBrains Mono",monospace; font-weight:600;
+  font-size:11px; letter-spacing:.1em; color:#fff;
+  background:var(--gold); padding:2px 9px; border-radius:3px;
+  margin-bottom:11px;
+}
+.q-text{font-size:17px; margin:0 0 16px; line-height:1.6; font-weight:600;}
+.opt{
+  display:flex; gap:14px; align-items:center;
+  border:1.5px solid var(--line);
+  background:var(--card); padding:14px 16px;
+  margin-bottom:11px; cursor:pointer; border-radius:4px;
+  transition:all .18s cubic-bezier(.2,.8,.2,1);
+  position:relative; overflow:hidden;
+}
+.opt::before{
+  content:""; position:absolute; left:0; top:0; bottom:0; width:0;
+  background:linear-gradient(90deg, rgba(158,43,37,.1), transparent);
+  transition:width .25s ease;
+}
+.opt:hover{border-color:var(--gold-light); transform:translateX(3px);}
+.opt.sel{
+  border-color:var(--red);
+  background:#f9ede0;
+  box-shadow:0 4px 14px -6px rgba(158,43,37,.45);
+}
+.opt.sel::before{width:100%;}
+.opt .letter{
+  flex:0 0 auto; width:30px; height:30px;
+  border:1.5px solid var(--ink); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:"JetBrains Mono",monospace; font-size:13px; font-weight:600;
+  transition:all .18s ease; z-index:1; background:var(--paper);
+}
+.opt.sel .letter{
+  background:linear-gradient(180deg,var(--red-bright),var(--red));
+  color:#fff; border-color:var(--red-deep);
+  box-shadow:0 0 0 3px rgba(158,43,37,.15);
+}
+.opt .otext{font-size:15px; line-height:1.55; z-index:1;}
+.opt-idk{opacity:.72; border-style:dashed;}
+.opt-idk .otext{font-style:italic; color:var(--ink-soft);}
+.opt-idk:hover{opacity:1;}
+.opt-idk.sel{opacity:1; border-style:solid;}
+
+/* ---- nav ---- */
+.nav{display:flex; justify-content:space-between; gap:14px; margin-top:36px;}
+button.btn{
+  font-family:"Noto Serif SC",serif; font-size:15.5px; font-weight:600;
+  letter-spacing:.1em; padding:14px 34px;
+  border:1.5px solid var(--ink); border-radius:4px;
+  background:linear-gradient(180deg,#3a2f20,var(--ink));
+  color:var(--paper); cursor:pointer;
+  transition:transform .14s, box-shadow .14s, filter .14s;
+  box-shadow:0 4px 0 rgba(43,34,24,.25);
+}
+button.btn:hover{transform:translateY(-2px); box-shadow:0 6px 0 rgba(43,34,24,.25);}
+button.btn:active{transform:translateY(2px); box-shadow:0 1px 0 rgba(43,34,24,.25);}
+button.btn.ghost{background:transparent; color:var(--ink); box-shadow:0 4px 0 rgba(43,34,24,.12);}
+button.btn.ghost:hover{box-shadow:0 6px 0 rgba(43,34,24,.12);}
+button.btn.primary{
+  border-color:var(--red-deep);
+  background:linear-gradient(180deg,var(--red-bright),var(--red));
+  box-shadow:0 4px 0 var(--red-deep);
+}
+button.btn.primary:hover{box-shadow:0 6px 0 var(--red-deep);}
+button.btn.primary:active{box-shadow:0 1px 0 var(--red-deep);}
+button.btn:disabled{opacity:.32; cursor:not-allowed; transform:none; box-shadow:none; filter:grayscale(.3);}
+
+/* ============ RESULT ============ */
+.result-head{text-align:center; margin-bottom:34px;}
+.stamp-big{
+  width:130px; height:130px; margin:0 auto 22px;
+  border:4px double var(--red); border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  color:var(--red);
+  font-family:"Ma Shan Zheng",cursive;
+  font-size:30px; letter-spacing:.08em; line-height:1.3; text-align:center;
+  transform:rotate(-7deg); opacity:.9; mix-blend-mode:multiply;
+  box-shadow:inset 0 0 0 7px rgba(158,43,37,.07);
+  animation:stamp .5s cubic-bezier(.3,1.4,.5,1) both;
+}
+@keyframes stamp{0%{opacity:0; transform:rotate(-7deg) scale(2.2);}60%{opacity:.9;}100%{opacity:.9; transform:rotate(-7deg) scale(1);}}
+.result-tagline{
+  font-family:"Ma Shan Zheng",cursive;
+  font-size:34px; color:var(--red-deep); margin:8px 0 4px; letter-spacing:.04em;
+}
+.result-sub{font-size:12.5px; color:var(--ink-faint); letter-spacing:.04em;}
+.basic-recap{
+  display:inline-flex; gap:0; flex-wrap:wrap; margin-top:16px;
+  font-family:"JetBrains Mono",monospace; font-size:12px;
+  border:1px solid var(--line); border-radius:4px; overflow:hidden;
+}
+.basic-recap span{padding:7px 16px; color:var(--ink-soft); background:var(--card);}
+.basic-recap span + span{border-left:1px solid var(--line);}
+.basic-recap span b{color:var(--red); font-weight:600;}
+
+.panel{
+  border:1.5px solid var(--ink); border-radius:6px;
+  background:linear-gradient(180deg,var(--card),#f7f1e1);
+  padding:24px 26px; margin-bottom:22px;
+  box-shadow:6px 7px 0 rgba(43,34,24,.06);
+}
+.panel h3{
+  margin:0 0 14px; font-size:13px; letter-spacing:.16em;
+  font-family:"JetBrains Mono",monospace; color:var(--red);
+  display:flex; align-items:center; gap:10px;
+}
+.panel h3::before{content:""; width:16px; height:16px; border:2px solid var(--gold); border-radius:50%; box-shadow:inset 0 0 0 3px var(--card);}
+.panel p{font-size:15px; line-height:1.85; margin:0; color:var(--ink);}
+.tags-row{display:flex; flex-wrap:wrap; gap:9px; margin-top:16px;}
+.tag-pill{
+  border:1.5px solid var(--ink); padding:6px 15px;
+  font-size:13px; border-radius:20px; background:#fff;
+  box-shadow:2px 2px 0 rgba(43,34,24,.1);
+}
+
+.bar-row{margin-bottom:22px;}
+.bar-labels{display:flex; justify-content:space-between; align-items:baseline; font-size:13px; color:var(--ink-soft); margin-bottom:8px;}
+.bar-labels .tag{color:var(--red); font-weight:700; font-size:13.5px;}
+.bar-track{
+  height:12px; background:var(--paper-deep);
+  border:1px solid var(--line); position:relative; border-radius:7px;
+  box-shadow:inset 0 1px 3px rgba(43,34,24,.15);
+}
+.bar-fill{
+  position:absolute; top:-1px; bottom:-1px; left:50%; width:0;
+  background:linear-gradient(90deg,var(--gold),var(--red));
+  border-radius:7px; transition:all 1s cubic-bezier(.2,.85,.2,1);
+  box-shadow:0 0 8px rgba(158,43,37,.35);
+}
+.bar-mid{position:absolute; left:50%; top:-4px; bottom:-4px; width:1.5px; background:var(--ink-soft); transform:translateX(-50%); z-index:1;}
+
+.export-cta{text-align:center; margin-top:34px; padding:26px 20px;
+  border:1.5px dashed var(--red); border-radius:8px; background:rgba(158,43,37,.04);}
+button.btn.big{font-size:17px; padding:16px 40px;}
+button.btn.copied{background:linear-gradient(180deg,var(--jade),#2f5340); border-color:#26442f; box-shadow:0 4px 0 #26442f;}
+.export-hint{margin-top:12px; font-size:12.5px; color:var(--ink-soft); letter-spacing:.03em;}
+.restart{text-align:center; margin-top:26px;}
+
+.dir-item{border-left:3px solid var(--gold); padding:2px 0 2px 16px; margin-bottom:18px;}
+.dir-item.dir-top{border-left-color:var(--red);}
+.dir-name{font-size:17px; font-weight:700; color:var(--ink); margin-bottom:7px; letter-spacing:.02em;}
+.dir-meter{display:flex; align-items:center; gap:12px; margin:0 0 9px;}
+.dir-meter-track{flex:1; height:10px; background:var(--paper-deep); border:1px solid var(--line); border-radius:6px; overflow:hidden; box-shadow:inset 0 1px 3px rgba(43,34,24,.15);}
+.dir-meter-fill{height:100%; width:0; background:linear-gradient(90deg,var(--gold),var(--red)); border-radius:6px; transition:width 1s cubic-bezier(.2,.85,.2,1); box-shadow:0 0 8px rgba(158,43,37,.3);}
+.dir-meter-val{font-family:"JetBrains Mono",monospace; font-size:12.5px; color:var(--red); font-weight:600; white-space:nowrap;}
+.dir-majors{font-size:13.5px; color:var(--ink-soft); line-height:1.7; margin-bottom:4px;}
+.dir-why{font-size:13.5px; color:var(--ink); line-height:1.7;}
+.dir-note{font-size:15px; line-height:1.85; color:var(--ink);}
+.dir-disclaim{margin-top:16px; padding-top:14px; border-top:1px dashed var(--line); font-size:12.5px; color:var(--ink-soft); line-height:1.85;}
+.dir-disclaim b{color:var(--red);}
+
+@media (max-width:540px){
+  h1.title{font-size:29px;}
+  .seal{width:62px; height:62px; font-size:16px;}
+  .subtitle{max-width:100%;}
+  .wrap{padding:30px 16px 90px;}
+  .step h2{font-size:21px;}
+  .basic-recap{font-size:11px;}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="sheet-head">
+    <span class="corner tl"></span><span class="corner tr"></span>
+    <span class="corner bl"></span><span class="corner br"></span>
+    <div class="seal">志愿<br>测评</div>
+    <div class="kicker"><span><span class="dot"></span>VOLUNTEER · PROFILE SHEET</span><span id="paperNo">No. 2026-0626</span></div>
+    <h1 class="title">志愿填报方向测评</h1>
+    <div class="subtitle">先答题，再规划 —— 用 <span class="hl">一组轻松的场景小题</span>，画出属于你的方向画像，再据此规划志愿。没有标准答案，<span class="hl">想不清楚就选「我不知道」</span>。</div>
+  </div>
+
+  <div class="progress-strip">
+    <div class="count">STEP <b id="stepNow">1</b> / <span id="stepTotal">7</span></div>
+    <div class="progress-track"><div class="progress-fill" id="progFill"></div></div>
+  </div>
+
+  <!-- STEP 0 -->
+  <div class="step active" data-step="0">
+    <div class="dim-label">基本信息 · BASIC</div>
+    <h2><span class="num">壹</span>填写你的基本情况</h2>
+    <div class="step-deco"></div>
+
+    <div class="field">
+      <label><b>*</b>所在省份</label>
+      <select id="province">
+        <option value="">请选择省份</option>
+        <option>北京</option><option>天津</option><option>河北</option><option>山西</option>
+        <option>内蒙古</option><option>辽宁</option><option>吉林</option><option>黑龙江</option>
+        <option>上海</option><option>江苏</option><option>浙江</option><option>安徽</option>
+        <option>福建</option><option>江西</option><option>山东</option><option>河南</option>
+        <option>湖北</option><option>湖南</option><option>广东</option><option>广西</option>
+        <option>海南</option><option>重庆</option><option>四川</option><option>贵州</option>
+        <option>云南</option><option>西藏</option><option>陕西</option><option>甘肃</option>
+        <option>青海</option><option>宁夏</option><option>新疆</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label><b>*</b>首选科目 <span class="hint">物理 / 历史 二选一</span></label>
+      <div class="chip-row" id="primaryChips">
+        <div class="chip" data-v="物理">物理</div>
+        <div class="chip" data-v="历史">历史</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label><b>*</b>再选科目 <span class="hint">从四门中选两门</span></label>
+      <div class="chip-row" id="secondaryChips">
+        <div class="chip" data-v="化学">化学</div>
+        <div class="chip" data-v="生物">生物</div>
+        <div class="chip" data-v="地理">地理</div>
+        <div class="chip" data-v="政治">政治</div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label><b>*</b>高考分数 <span class="hint">成绩已出，填实考分</span></label>
+      <input type="number" id="score" placeholder="例如 630">
+    </div>
+  </div>
+
+  <div id="dimSteps"></div>
+
+  <!-- location -->
+  <div class="step" data-step="5">
+    <div class="dim-label">地域与取舍 · LOCATION</div>
+    <h2><span class="num">陆</span>去哪上学，怎么取舍</h2>
+    <div class="step-deco"></div>
+    <div class="q">
+      <div class="q-no">Q13</div>
+      <div class="q-text">如果分数完全够，不用管现实阻碍，你更想去哪儿读大学？</div>
+      <div class="opt" data-q="geo" data-v="本省"><div class="letter">A</div><div class="otext">留在家乡省份，周末能回家蹭饭，有事家里能照应。</div></div>
+      <div class="opt" data-q="geo" data-v="大城市"><div class="letter">B</div><div class="otext">必须去北上广深一线城市！去见见大世面，不想窝在小地方。</div></div>
+      <div class="opt" data-q="geo" data-v="不限"><div class="letter">C</div><div class="otext">城市无所谓，我只要能上那个好学校/好专业。</div></div>
+    </div>
+  </div>
+
+  <!-- result -->
+  <div class="step" data-step="6" id="resultStep">
+    <div class="result-head">
+      <div class="stamp-big">测评<br>完成</div>
+      <div class="result-tagline" id="profileTagline">你的方向画像</div>
+      <div class="result-sub">以下为初步方向参考 · 最终志愿请结合院校专业分数线核实</div>
+      <div class="basic-recap" id="basicRecap"></div>
+    </div>
+
+    <div class="panel">
+      <h3>画像标签 · PROFILE</h3>
+      <p id="profileText"></p>
+      <div class="tags-row" id="profileTags"></div>
+    </div>
+
+    <div class="panel">
+      <h3>维度倾向 · DIMENSIONS</h3>
+      <div id="resultBars"></div>
+    </div>
+
+    <div class="panel">
+      <h3>方向建议 · DIRECTION</h3>
+      <p id="directionText"></p>
+    </div>
+
+    <div class="export-cta">
+      <button class="btn primary big" id="copyBtn" onclick="copyData()">复制全部规划数据 ↗</button>
+      <div class="export-hint">复制后，粘贴回与 AI 的对话，即可开始志愿填报规划</div>
+    </div>
+    <div class="restart"><button class="btn ghost" onclick="restart()">重新测评</button></div>
+  </div>
+
+  <div class="nav" id="navBar">
+    <button class="btn ghost" id="prevBtn" onclick="prevStep()">上一步</button>
+    <button class="btn primary" id="nextBtn" onclick="nextStep()">下一步</button>
+  </div>
+
+</div>
+
+<script>
+const dimensions = [
+  {key:"interest", title:"想做喜欢的 vs 想做稳的", num:"贰", tag:"维度 1/4 · 心里那杆秤",
+   questions:[
+     {text:"假如突然有 500 万砸你头上，这辈子啥也不干也饿不死了——你还会继续读书、搞事业吗？",
+      opts:[["会啊！我还是想提升自己",2],["直接躺平享受生活，周游世界不香吗？",-2],["彩票绝缘体，根本没想过这种事情",0]]},
+     {text:"刷短视频时看到大学专业的介绍，你更会被什么吸引？",
+      opts:[["哇！这个专业学的东西也太有意思了吧！",1],["这个专业毕业工资高，找工作不用愁。",-1],["刚考完，根本不想看这些。",0]]},
+     {text:"假如两个录取通知书摆在你面前：名校的冷门专业，和普通学校的王牌专业，你选哪个？",
+      opts:[["必须选喜欢的专业！将就四年自己不喜欢的课，想想就很痛苦。",2],["选名校！好的环境太重要了。",-2],["选不出来。。。",0]]}]},
+  {key:"practice", title:"上手就干 vs 先想明白", num:"叁", tag:"维度 2/4 · 你怎么搞定一件事",
+   questions:[
+     {text:"周末正追剧/打游戏，家里 Wi-Fi 突然坏掉了，你的第一反应是？",
+      opts:[["撸起袖子自己捣鼓，尝试重启光猫、拔插网线。",2],["先冷静分析，是路由器坏了还是欠费了？",-2],["直接喊爸妈/打电话报修，我是手残党。",0]]},
+     {text:"大学小组作业要分工了，你最想抢哪个部分？",
+      opts:[["动手的活儿：搭东西、做实验、跑数据",1],["动脑的活儿：理思路、写分析、做汇报",-1],["你们先选，剩下没人干的给我就行，别让我当组长。",0]]},
+     {text:"手机刚下了一个热门新 App，你的打开方式是？",
+      opts:[["直接乱点一通，玩着玩着就会了。",1],["先看看怎么用、它逻辑是啥再上手",-1],["先放着吃灰，等身边人都说好用了、教我怎么用，我再打开。",0]]}]},
+  {key:"social", title:"人群里来电 vs 独处时来电", num:"肆", tag:"维度 3/4 · 你的电量怎么充",
+   questions:[
+     {text:"熬了几个大夜终于把一个大项目搞定了，哪个瞬间让你觉得最爽？",
+      opts:[["和团队小伙伴一起欢呼、击掌、约庆功宴的时候。",2],["靠自己一个人解决一个很难的问题的时候。",-2],["想象被同学/老师夸奖的场景。",0]]},
+     {text:"想象一下你未来的工作，你更想要哪种氛围？",
+      opts:[["同事都是朋友，随时能讨论、能闲聊，能下班一起约饭。",1],["最好让我一个人在角落的工位，同事都在微信上聊天。",-1],["我还没想那么远。",0]]},
+     {text:"小组作业做完了，需要派一个人上台去讲 PPT，你会？",
+      opts:[["我来我来，就喜欢这种“高光”环节",1],["千万别点我，想想要展示自己做的这种东西就羞耻",-1],["我都可以的，没人就只好我上了。",0]]}]},
+  {key:"stability", title:"求个安稳 vs 搏个上限", num:"伍", tag:"维度 4/4 · 你想要的未来长啥样",
+   questions:[
+     {text:"尝试想象一下十年后的自己？",
+      opts:[["工作稳定，朝九晚五，准时放假。",2],["工作不稳定，但是上限高，很锻炼自己。",-2],["十年后太远了，我连下个月干啥都还没想好。",0]]},
+     {text:"未来的职业方向？",
+      opts:[["只考虑考公考编进体制。",1],["创业！创业！",-1],["在大学里面学到点知识再考虑吧，",0]]},
+     {text:"听到「35 岁危机」这种说法，你的反应是？",
+      opts:[["有点焦虑，所以我选专业时会优先考虑越老越吃香的稳定行业。",1],["无所谓，船到桥头自然直",-1],["不是很了解。",0]]}]}
+];
+
+let primarySubject = null;
+const secondarySubjects = new Set();
+const allSubjects = ()=>[primarySubject, ...secondarySubjects].filter(Boolean);
+let curStep = 0;
+const answers = {dims:{interest:[],practice:[],social:[],stability:[]}, loc:null, tradeoff:null};
+
+const dimStepsContainer = document.getElementById('dimSteps');
+dimensions.forEach((dim, di)=>{
+  const el = document.createElement('div');
+  el.className='step'; el.dataset.step=(di+1);
+  el.innerHTML = `
+    <div class="dim-label">${dim.tag}</div>
+    <h2><span class="num">${dim.num}</span>${dim.title}</h2>
+    <div class="step-deco"></div>
+    ${dim.questions.map((q,qi)=>`
+      <div class="q">
+        <div class="q-no">Q${di*3+qi+1}</div>
+        <div class="q-text">${q.text}</div>
+        ${q.opts.map((o,oi)=>`
+          <div class="opt${o[1]===0?' opt-idk':''}" data-q="${dim.key}-${qi}" data-v="${o[1]}">
+            <div class="letter">${String.fromCharCode(65+oi)}</div>
+            <div class="otext">${o[0]}</div>
+          </div>`).join('')}
+      </div>`).join('')}`;
+  dimStepsContainer.appendChild(el);
+});
+
+document.addEventListener('click', e=>{
+  const opt = e.target.closest('.opt'); if(!opt) return;
+  const qKey = opt.dataset.q;
+  opt.parentElement.querySelectorAll(`.opt[data-q="${qKey}"]`).forEach(g=>g.classList.remove('sel'));
+  opt.classList.add('sel');
+  if(qKey==='geo'){
+    const g = opt.dataset.v;
+    answers.loc = g;
+    answers.tradeoff = g==='本省' ? '本省优先' : '名校优先';
+  }
+  else{ const [k,qi]=qKey.split('-'); answers.dims[k][qi]=parseInt(opt.dataset.v,10); }
+  updateNext();
+});
+
+document.querySelectorAll('#primaryChips .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    document.querySelectorAll('#primaryChips .chip').forEach(c=>c.classList.remove('sel'));
+    chip.classList.add('sel');
+    primarySubject = chip.dataset.v;
+    updateNext();
+  });
+});
+document.querySelectorAll('#secondaryChips .chip').forEach(chip=>{
+  chip.addEventListener('click', ()=>{
+    const v=chip.dataset.v;
+    if(secondarySubjects.has(v)){ secondarySubjects.delete(v); chip.classList.remove('sel'); }
+    else{
+      if(secondarySubjects.size>=2) return; // 最多两门
+      secondarySubjects.add(v); chip.classList.add('sel');
+    }
+    updateNext();
+  });
+});
+document.getElementById('province').addEventListener('change', updateNext);
+document.getElementById('score').addEventListener('input', updateNext);
+
+const steps = ()=>Array.from(document.querySelectorAll('.step'));
+function showStep(n){
+  steps().forEach(s=>s.classList.toggle('active', +s.dataset.step===n));
+  curStep=n;
+  const last=steps().length-1;
+  document.getElementById('prevBtn').style.visibility = n===0?'hidden':'visible';
+  document.getElementById('navBar').style.display = n===last?'none':'flex';
+  document.getElementById('stepNow').textContent = n+1;
+  document.getElementById('stepTotal').textContent = last;
+  document.getElementById('progFill').style.width = `${(n/last)*100}%`;
+  window.scrollTo({top:0,behavior:'smooth'});
+  updateNext();
+}
+function updateNext(){
+  const b=document.getElementById('nextBtn'); let ok=true;
+  if(curStep===0) ok = document.getElementById('province').value && primarySubject && secondarySubjects.size===2 && document.getElementById('score').value;
+  else if(curStep>=1 && curStep<=dimensions.length){
+    const d=dimensions[curStep-1];
+    ok = d.questions.every((q,qi)=>answers.dims[d.key][qi]!==undefined);
+  } else if(curStep===dimensions.length+1) ok = answers.loc!==null && answers.tradeoff!==null;
+  b.disabled=!ok;
+  b.textContent = curStep===dimensions.length+1?'生成测评结果 →':'下一步 →';
+}
+function nextStep(){
+  const last=steps().length-1;
+  if(curStep===dimensions.length+1){ computeResult(); showStep(last); return; }
+  if(curStep<last) showStep(curStep+1);
+}
+function prevStep(){ if(curStep>0) showStep(curStep-1); }
+
+function computeResult(){
+  const sums={}; dimensions.forEach(d=>sums[d.key]=answers.dims[d.key].reduce((a,b)=>a+b,0));
+  const ranges={interest:5,practice:4,social:4,stability:4};
+  const labels={interest:["现实驱动","兴趣驱动"],practice:["理论思考","动手实践"],social:["独立专注","协作表达"],stability:["进取冒险","稳定优先"]};
+
+  // 统计「我不知道」（0 分）的数量
+  let idk=0; dimensions.forEach(d=>answers.dims[d.key].forEach(v=>{ if(v===0) idk++; }));
+  const totalQ = dimensions.reduce((a,d)=>a+d.questions.length,0);
+
+  // 维度倾向条
+  const bars=document.getElementById('resultBars'); bars.innerHTML='';
+  const leanTags=[];
+  dimensions.forEach(d=>{
+    const v=sums[d.key]; const pct=(v/ranges[d.key])*50+50;
+    const lean = v>0?labels[d.key][1] : v<0?labels[d.key][0] : "还在摸索";
+    leanTags.push(lean);
+    const row=document.createElement('div'); row.className='bar-row';
+    const w = Math.max(2,Math.min(98,pct));
+    const left = v>=0?50:w; const width = Math.abs(w-50);
+    row.innerHTML=`<div class="bar-labels"><span>${labels[d.key][0]}</span><span class="tag">${lean}</span><span>${labels[d.key][1]}</span></div>
+      <div class="bar-track"><div class="bar-mid"></div><div class="bar-fill"></div></div>`;
+    bars.appendChild(row);
+    const fill=row.querySelector('.bar-fill');
+    fill.style.left = left+'%';
+    requestAnimationFrame(()=>{ fill.style.width = width+'%'; });
+  });
+
+  // ===== 生成有意思的「称号」 =====
+  const I=sums.interest, P=sums.practice, S=sums.social, T=sums.stability;
+  let name, subtitle, lost=false;
+
+  if(idk >= Math.ceil(totalQ*0.6)){
+    // 大半题都「我不知道」→ 探索型
+    name = "待解锁 · 可能性新星";
+    subtitle = "方向还在云里雾里，但这恰恰是这个年纪最正常的样子";
+    lost = true;
+  } else {
+    // 兴趣 × 稳定 决定主称号
+    if(I>0 && T<0)        name = "理想冲锋型";
+    else if(I>0 && T>=0)  name = "稳健理想家";
+    else if(I<=0 && T<0)  name = "进取实干派";
+    else                  name = "稳扎稳打型";
+    if(idk >= Math.ceil(totalQ*0.34)){ name = "探索版 · " + name; lost = true; }
+    const pw = P>0?"动手派" : P<0?"思辨派" : "动脑动手都还在试";
+    const sw = S>0?"团队咖" : S<0?"独行侠" : "社交随缘";
+    subtitle = pw + " · " + sw;
+  }
+  document.getElementById('profileTagline').textContent = "「" + name + "」";
+
+  // ===== 画像描述（轻松、像唠嗑）=====
+  const iDesc = I>0?"更认「喜欢」这两个字" : I<0?"更认「值不值、稳不稳」" : "在「喜欢」和「现实」之间还没拿定主意";
+  const tDesc = T>0?"想要的是踏实和确定" : T<0?"宁可冒点险也要够得着上限" : "对未来还没太具体的想象";
+  const pDesc = P>0?"是个上手就干的动手派" : P<0?"是个爱琢磨原理的思辨派" : "动手还是动脑都还在试";
+  const sDesc = S>0?"在人堆里越聊越来劲" : S<0?"一个人专注最舒服" : "社不社牛看当天心情";
+  let pText = `说白了，你这人 ${iDesc}，${tDesc}；做事上 ${pDesc}，充电方式是 —— ${sDesc}。`;
+  if(lost){
+    pText += ` 而且好几道题你都点了「我不知道」—— 别有压力，十七八岁本来就该迷茫。接下来我们不急着定，先从「排除明显不喜欢的」开始，慢慢把路收窄。`;
+  }
+  document.getElementById('profileText').textContent = pText;
+  document.getElementById('profileTags').innerHTML = [...leanTags, answers.loc].map(t=>`<span class="tag-pill">${t}</span>`).join('');
+
+  // ===== 方向建议（细化版：8 方向打分 → 排序 → 带代表专业和"为什么"）=====
+  const prov=document.getElementById('province').value, subj=allSubjects().join('+'), scr=document.getElementById('score').value;
+  const lean = {
+    I: I>0?'兴趣驱动':I<0?'更看现实':'在兴趣和现实之间还摇摆',
+    P: P>0?'上手就干的动手派':P<0?'爱琢磨原理的思辨派':'动手动脑都还在试',
+    S: S>0?'人群里来电的协作型':S<0?'独处充电的独行侠':'社交随缘',
+    T: T>0?'求稳、想要确定感':T<0?'敢闯、想搏个上限':'对未来还没拿定主意'
+  };
+  const fields = [
+    {name:'计算机 / 信息技术', majors:'计算机、软件工程、人工智能、数据科学、电子信息',
+     score: P*1.0 + I*0.8 + (T<0?-T:0)*0.6,
+     why:`你是${lean.P}、又${lean.I}${T<0?'，还愿意为上限拼一把':''}，这条赛道挺合拍`},
+    {name:'工科 / 工程制造', majors:'机械、自动化、电气、土木、材料、车辆',
+     score: P*1.0 + (I>0?I:0)*0.4 + (T>0?T:0)*0.2,
+     why:`你${lean.P}，工程类正好是"动手把东西做出来"的方向`},
+    {name:'理科 / 基础研究', majors:'数学、物理、化学、生物科学、统计学',
+     score: (P<0?-P:0)*0.9 + (I>0?I:0)*0.9,
+     why:`你${lean.I}、又是${lean.P}，适合往基础学科里钻`},
+    {name:'医学 / 健康', majors:'临床医学、口腔医学、药学、护理、预防医学',
+     score: (T>0?T:0)*0.8 + (I>0?I:0)*0.4 + 0.6,
+     why:`你${lean.T}，医学是典型的长线方向、越往后越稳（但学制长、得能吃苦）`},
+    {name:'经济 / 金融 / 商科', majors:'经济学、金融学、会计、工商管理、国际经贸',
+     score: (S>0?S:0)*0.8 + (I<0?-I:0)*0.3 + (T<0?-T:0)*0.2,
+     why:`你${lean.S}、做事也${lean.I}，和"跟人、跟钱打交道"比较搭`},
+    {name:'法学 / 公共管理', majors:'法学、行政管理、政治学、社会学',
+     score: (S>0?S:0)*0.7 + (T>0?T:0)*0.7,
+     why:`你${lean.S}、又${lean.T}，法学和体制内方向值得看看`},
+    {name:'师范 / 教育', majors:'教育学、各学科师范、学前教育、心理学',
+     score: (S>0?S:0)*0.6 + (T>0?T:0)*0.9,
+     why:`你${lean.T}、也${lean.S}，当老师是既稳定又常跟人打交道的路`},
+    {name:'人文 / 语言 / 传媒', majors:'汉语言文学、新闻传播、外国语言、历史学',
+     score: (I>0?I:0)*0.7 + (S>0?S:0)*0.6 + (P<0?-P:0)*0.3,
+     why:`你${lean.I}、表达上${lean.S}，人文和传媒类能让你发挥`}
+  ];
+
+  let dirHTML, dirText, dirRankFull=[];
+  // 各方向理论满分（与上方 score 公式对应），用来把得分换算成"推荐指数"百分比
+  const dirMax = {'计算机 / 信息技术':10.4,'工科 / 工程制造':6.8,'理科 / 基础研究':8.1,'医学 / 健康':5.8,'经济 / 金融 / 商科':5.5,'法学 / 公共管理':5.6,'师范 / 教育':6.0,'人文 / 语言 / 传媒':7.1};
+  if(lost && idk >= Math.ceil(totalQ*0.6)){
+    dirText = "你现在方向感还比较模糊——这太正常了，别急着锁死专业。先用「排除法」：把一想到就抵触的方向先划掉，再在剩下的里各挑 1-2 个具体专业，去查录取线和真实就业，一点点收窄。";
+    dirHTML = `<div class="dir-note">${dirText}</div>`;
+  } else {
+    const ranked = fields.map(f=>({...f, pct: Math.max(0, Math.min(99, Math.round(f.score / dirMax[f.name] * 100)))}))
+                         .sort((a,b)=>b.pct-a.pct);
+    const top = ranked.filter(f=>f.pct>0).slice(0,3);
+    const list = top.length ? top : ranked.slice(0,2);
+    dirRankFull = ranked.map(f=>({方向:f.name, 推荐指数:f.pct+'%', 代表专业:f.majors}));
+    dirHTML = list.map((f,i)=>`
+      <div class="dir-item${i===0?' dir-top':''}">
+        <div class="dir-name">${f.name}</div>
+        <div class="dir-meter">
+          <div class="dir-meter-track"><div class="dir-meter-fill" data-pct="${f.pct}"></div></div>
+          <div class="dir-meter-val">推荐指数 ${f.pct}%</div>
+        </div>
+        <div class="dir-majors">代表专业 · ${f.majors}</div>
+        <div class="dir-why">为什么 · ${f.why}。</div>
+      </div>`).join('');
+    dirText = list.map(f=>`${f.name}（推荐指数 ${f.pct}%；代表专业：${f.majors}；为什么：${f.why}）`).join('；');
+  }
+  dirText += `。（推荐指数仅按你的作答倾向估算、非结论，需结合「${prov||'本省'} · ${subj} · ${scr}分」的选科与录取位次核实，最终由考生与家长、老师一起定。）`;
+  document.getElementById('directionText').innerHTML = dirHTML +
+    `<div class="dir-disclaim">推荐指数是按你的<b>作答倾向</b>估算的匹配度，不是结论。具体「能不能报」要看你的选科，「能上哪所学校」要结合「${prov||'本省'} · ${subj} · ${scr}分」查录取位次——最后和家人、老师一起定。</div>`;
+  requestAnimationFrame(()=>{ document.querySelectorAll('#directionText .dir-meter-fill').forEach(el=>{ el.style.width = el.dataset.pct+'%'; }); });
+
+  document.getElementById('basicRecap').innerHTML =
+    `<span>省份 <b>${document.getElementById('province').value}</b></span>
+     <span>选科 <b>${allSubjects().join('+')}</b></span>
+     <span>分数 <b>${document.getElementById('score').value}</b></span>`;
+
+  // ===== 构建全量导出数据 =====
+  // 维度明细（含倾向强度百分比）
+  const dimDetail = {};
+  dimensions.forEach(d=>{
+    const lv = sums[d.key];
+    dimDetail[d.key] = {
+      title: d.title,
+      原始得分: lv,
+      满分: ranges[d.key],
+      倾向: lv>0?labels[d.key][1] : lv<0?labels[d.key][0] : "还在摸索",
+      倾向强度: Math.round(Math.abs(lv)/ranges[d.key]*100) + '%'
+    };
+  });
+  // 逐题作答（可读版：每题题目 + 实际选了哪句话）
+  const qaLog = [];
+  dimensions.forEach(d=>{
+    d.questions.forEach((q,qi)=>{
+      const v = answers.dims[d.key][qi];
+      const opt = q.opts.find(o=>o[1]===v);
+      qaLog.push({维度:d.title, 题目:q.text, 我的选择:opt?opt[0]:'（未作答）'});
+    });
+  });
+  const geoText = answers.loc==='本省' ? '留在家乡省份（离家近、有照应）'
+                : answers.loc==='大城市' ? '去北上广深一线城市（见世面、不想窝小地方）'
+                : '城市无所谓，只要能上好学校 / 好专业';
+  qaLog.push({维度:'地域与取舍', 题目:'分数完全够的话，更想去哪儿读大学？', 我的选择:geoText});
+
+  window.__exportData = {
+    生成时间: new Date().toLocaleString('zh-CN'),
+    基本信息: {
+      省份: document.getElementById('province').value,
+      首选科目: primarySubject,
+      再选科目: [...secondarySubjects],
+      选科组合: allSubjects().join('+'),
+      高考分数: document.getElementById('score').value,
+      位次: '待参谋根据本省一分一段表反查（请勿凭空估算）'
+    },
+    地域偏好: answers.loc,
+    本省vs好学校: answers.tradeoff,
+    方向画像: {
+      称号: name,
+      副标签: subtitle,
+      四维倾向: leanTags,
+      画像描述: pText,
+      四维明细: dimDetail,
+      迷茫提示: lost ? "考生多处选择「我不知道」，方向尚不明确。规划时请多用排除法、多给选项，切勿替其下定论。" : "无"
+    },
+    方向建议: dirText,
+    全部方向推荐榜: dirRankFull,
+    逐题作答: qaLog,
+    给参谋的提示: "请结合『四维明细 + 逐题作答』先把这名考生理解成一个具体的人，再按流程：阶段1共情 → 查本省一分一段表得位次 → 用推荐榜与地域/取舍偏好收窄方向（停下确认）→ 搜院校排冲稳保 → 选科校验 → 出带来源的对比表与建议书。每条数据都要带可查证来源、标待复核，不要替考生下结论。",
+    红线提醒: "以上均为信息整理与方向参考，不是确定性结论。每条数据需附可查证来源并由用户复核，最终志愿由考生与家长、老师共同决定。"
+  };
+}
+
+function copyData(){
+  const data = window.__exportData;
+  if(!data){ return; }
+  const text =
+`【高考志愿规划 · 问卷数据】请基于以下数据，按「志愿填报参谋」的方式帮我做志愿规划。注意：所有结论需附可查证来源、标待复核，不要替我下定论。
+
+${JSON.stringify(data, null, 2)}`;
+  const b=document.getElementById('copyBtn');
+  const done=()=>{ const old="复制全部规划数据 ↗"; b.textContent='✓ 已复制，粘贴回对话即可'; b.classList.add('copied'); setTimeout(()=>{ b.textContent=old; b.classList.remove('copied'); }, 2600); };
+  // 优先用 clipboard API
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(text).then(done).catch(()=>fallbackCopy(text,done));
+  } else {
+    fallbackCopy(text,done);
+  }
+}
+function fallbackCopy(text, done){
+  // 兜底一：临时 textarea + execCommand
+  try{
+    const ta=document.createElement('textarea');
+    ta.value=text; ta.style.position='fixed'; ta.style.top='0'; ta.style.left='0'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok=document.execCommand('copy');
+    document.body.removeChild(ta);
+    if(ok){ done(); return; }
+  }catch(e){}
+  // 兜底二：在页面上显示一个可全选的文本框，让用户手动复制
+  showManualBox(text);
+}
+function showManualBox(text){
+  let box=document.getElementById('manualCopyBox');
+  if(!box){
+    box=document.createElement('div'); box.id='manualCopyBox';
+    box.style.cssText='margin-top:14px;';
+    box.innerHTML='<div style="font-size:13px;color:var(--ink-soft);margin-bottom:6px;">自动复制不可用，请长按下方文本框全选复制 ↓</div>';
+    const ta=document.createElement('textarea');
+    ta.readOnly=true; ta.value=text;
+    ta.style.cssText='width:100%;height:160px;border:1px solid var(--line);border-radius:10px;padding:12px;font-size:12px;font-family:JetBrains Mono,monospace;background:var(--card);color:var(--ink);';
+    box.appendChild(ta);
+    document.querySelector('.export-cta').appendChild(box);
+    ta.focus(); ta.select();
+  }
+}
+
+function restart(){ location.reload(); }
+
+showStep(0);
+const d=new Date();
+document.getElementById('paperNo').textContent = `No. ${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}${String(d.getDate()).padStart(2,'0')}`;
+</script>
+</body>
+</html>
